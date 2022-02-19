@@ -92,7 +92,22 @@ header nav ul li a {
   margin-right: 20px;
 }
 .header-img {
-  background: linear-gradient(to bottom right, blue, 25%, pink);
+  background: linear-gradient(to bottom right, blue, 25%, rgb(9, 235, 84));
+}
+
+.lastly {
+  height: 250px;
+  padding-top: 1px;
+  background: linear-gradient(
+    to bottom right,
+    rgb(7, 192, 248),
+    25%,
+    rgb(57, 235, 220)
+  );
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  filter: brightness(80%);
 }
 
 .hero-image {

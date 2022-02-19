@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Classified Document Room</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link
+      href="http://fonts.googleapis.com/css?family=Crete+Round"
+      rel="stylesheet"
+      type="text/css"
+    />
+  </head>
+
+  <body>
+    <header>
+      <div id="Home">
+        <div class="header-img">
+          <div class="wrapper">
+            <h1>The Pentagon<span class="color">.</span></h1>
+            <nav>
+              <ul>
+                <li><a href="#Home">Home</a></li>
+                <li><a href="#Security">Security</a></li>
+                <li><a href="#Base">Base</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="hero-image">
+      <div class="wrapper">
+        <h2>
+          <strong>Classified Document Room</strong>
+        </h2>
+        <a href="#Security" class="button-1">Get Started</a>
+      </div>
+    </div>
+
+    <div id="Security">
+      <div class="wrapper">
+        <ul>
+        <div>
+          <li class="feature-1">
+            <h4>Fire Alarm</h4>
+            <br>
+              Fire Alarm Circuit is one of the simple and cool projects </br>
+              in electronics it detects the fire using a </br>
+              thermistor and activates the alarming sound with buzzer. </br>
+            </p>
+          </br>
+        </div>
+            <a href="#Base">View More...</a>
+          </li>
+
+        <div>
+          <li class="feature-2">
+            <h4>Light Intensity</h4>
+            <br>
+              LDR are used most of times to detect presence of light or for</br>
+              measuring the intensity of light. </br>
+            </p>
+          </br>
+        </div>
+            <a href="#Base">View More...</a>
+          </li>
+        <div>
+          <li class="feature-3">
+            <h4>Floor Pressure sensor</h4>
+            <br>
+            <p>
+              Floor Pressure sensors are implemented for security breaches </br>
+              in system it detects pressure using push button and </br>
+              activated the alarming sound with buzzer
+
+            </p>
+          </br>
+            <a href="#Base">View More...</a>
+          </li>
+        </div>
+          <div class="clear"></div>
+        </ul>
+      </div>
+    </div>
+
+    <div id="primary-content">
+      <div class="wrapper">
+        <article>
+          <h3>Featured Content</h3>
+          <p>
+            The final security system : final system is work as all 3 sub projects as one project .
+            that is combiend of Classified Document Room ,  President’s Office / Situation Room 
+            and  President’s Office / Situation Room.
+          </p>
+          
+        </article>
+      </div>
+    </div>
+
+    <div id="Base">
+      <div class="wrapper">
+        <article>
+          <div class="overlay">
+            <h5>Base Code</h5>
+            <p>
+              <pre>
+            try:
+                from pyfirmata import Arduino, util, INPUT, OUTPUT
+                import paho.mqtt.client as mqtt 
+            except:
+                import pip
+                pip.main(['install','pyfirmata','paho-mqtt'])
+                from pyfirmata import Arduino, util, INPUT, OUTPUT
+            
+            
+            # imports
+            
+            import time
+            import math
+            import paho.mqtt.client as mqtt
+            
+            # node-RED data
+            
+            group = "G36A"
+            topic = "G36A/CDR/DATA"
+            board = Arduino ("COM4")
+            mqttBroker = "vpn.ce.pdn.ac.lk" 
+            mqttPort = 8883
+            
+            def on_connect(client, userdata, flags, rc):
+                print("Connected with result code "+str(rc))
+                client.subscribe(topic)
+            
+            def on_message(client, userdata, msg):
+                print(msg.topic+" "+str(msg.payload))
+            
+            client = mqtt.Client(group)
+            
+            
+            try:
+                client.connect(mqttBroker,mqttPort) 
+                client.on_connect = on_connect
+                client.on_message = on_message
+                client.loop_start()
+            except:
+                print("Connection to MQTT broker failed!")
+                exit(1)
+            
+            it = util.Iterator(board)
+            it.start()
+            
+            #get pins
+            
+            ldr_pin = board.get_pin('a:2:i') #Light intensity reading using the ldr
+            switch_pin = board.get_pin('d:13:i') #Push button ; input signals
+            switch_1_pin = board.get_pin('d:8:i') #Sequence password buuton 1
+            switch_2_pin = board.get_pin('d:10:i') #Sequence password button 2
+            thermistor_pin = board.get_pin('a:0:i') #Temperature readings using the thermistor
+            led_pin = board.get_pin('d:3:o') #Controlling LEDs and Buzzers
+            led_1_pin = board.get_pin('d:4:o') #Sequence 1 Output 
+            led_2_pin = board.get_pin('d:5:o') #Sequence 2 Output
+            
+            # loop helpers
+            
+            light_intensity1 = 0
+            thermistor_value1 = 0
+            results = []
+            
+            # loop 0.1s
+            
+            while True:
+                switch_value = switch_pin.read()
+                light_intensity = ldr_pin.read()
+                thermistor_value = thermistor_pin.read()
+                switch_1_value = switch_1_pin.read()
+                switch_2_value = switch_2_pin.read()
+                led_value = led_pin.read()
+            
+                if light_intensity == None or thermistor_value == None or switch_value == None:
+                    pass
+            
+                elif switch_1_value or switch_2_value:
+                    if switch_1_value == None or switch_2_value == None:
+                        pass
+                    
+                        
+                    elif switch_1_value:
+                        board.digital[4].write(1)
+                        time.sleep(0.3)
+                        board.digital[4].write(0)
+                        results.append("━")
+                        
+                    elif switch_2_value:
+                        board.digital[5].write(1)
+                        time.sleep(0.3)
+                        board.digital[5].write(0)
+                        results.append("•")
+            
+                    if len(results) == 6:
+                        moss_code = ' '.join(results)
+                        code = f"moss code : {moss_code}"
+                        client.publish(topic,code)
+                        print(f"Moss Code {code}")
+                        results = []
+            
+                elif thermistor_value > thermistor_value1 or light_intensity < light_intensity1 or switch_value:
+                    for i in range(8):
+                        board.digital[3].write(1)
+                        time.sleep(0.3)
+                        board.digital[3].write(0)
+                        time.sleep(0.2)
+                        board.digital[3].write(0)
+                    
+                        light_intensity1 = light_intensity * 90 / 100
+                        thermistor_value1 = thermistor_value * 102 / 100
+            
+                    data = f"light intensity : {light_intensity} switch value : {switch_value} thermistor value : {thermistor_value}"
+                    client.publish(topic,data)
+                    
+             
+                time.sleep(0.1)
+            
+            
+              </pre>
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <footer>
+      <div class="lastly">
+      <div class="wrapper">
+        <div id="footer-info">
+          <p>All rights reserved.</p>
+          <p>CopyRights : <a href="https://github.com/kalanakt">KT</a></p>
+        </div>
+        <div id="footer-links">
+          <ul>
+            <li><h5>Group Members</h5></li>
+            <li><a href="e19172@eng.pdn.ac.lk ">E/19/172 : Jayawickrama H. W. K. P.</li>
+            <li><a href="e19186@eng.pdn.ac.lk ">E/19/186 : Karunasinhe M. W. L. </a></li>
+            <li><a href="e19194@eng.pdn.ac.lk ">E/19/194 : Kavindra W. A. S</a></li>
+            <li><a href="e19198@eng.pdn.ac.lk ">E/19/198 : Kithmina B. L. K.</a></li>
+          </ul>
+        </div>
+        <div class="clear"></div>
+      </div>
+    </div>
+    </footer>
+  </body>
+</html>
